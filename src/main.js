@@ -5,7 +5,7 @@ import { draw, drawStartScreen } from './draw.js';
 import { recordElement, restartButton, shopIcon, shopMainOverlay, shopMainCloseButton, shopCosmeticsButton, shopUpgradesButton, shopAchievementsButton, shopCosmeticsOverlay, shopCosmeticsBackButton, comingSoonModal, comingSoonCloseButton, coinAmountElement, elegantSuitButton, elegantSuitPriceElement, brightnessIcon, brightnessOverlay, brightnessSlider, brightnessValue, brightnessDefault, brightnessClose, updateElegantSuitUI, levelElement, languageIcon, languageOverlay, languageClose, languageButtons, achievementsOverlay } from './ui.js';
 import { changeLanguage, getTranslation } from './translations.js';
 import { setupAllInputs } from './input.js';
-import { openAchievements } from './achievements.js';
+import { openAchievements, refreshAchievementsButton } from './achievements.js';
 
 let gameWasRunningBeforeShop = false;
 
@@ -24,6 +24,9 @@ function init(quickStart = false) {
         state.setCoins(parseInt(storedCoins));
     }
     coinAmountElement.textContent = state.coins;
+
+    // Actualizar indicador de logros pendientes al iniciar (asegura que el badge superior y el de la tienda sean correctos)
+    try { refreshAchievementsButton(); } catch (e) {}
 
     const storedElegantSuitPurchased = localStorage.getItem('elegantSuitPurchased') === 'true';
     state.setElegantSuitPurchased(storedElegantSuitPurchased);
@@ -44,6 +47,8 @@ function init(quickStart = false) {
     // Inicializar idioma (por defecto español)
     const savedLanguage = localStorage.getItem('selectedLanguage') || 'es';
     changeLanguage(savedLanguage);
+    // Actualizar indicador de logros pendientes (usa el idioma seleccionado)
+    try { refreshAchievementsButton(); } catch (e) {}
 
     // Marcar el botón correspondiente como seleccionado
     Object.values(languageButtons).forEach(btn => btn.classList.remove('selected'));
@@ -95,8 +100,21 @@ shopCosmeticsBackButton.addEventListener('click', () => {
 });
 
 shopUpgradesButton.addEventListener('click', () => {
-    comingSoonModal.classList.remove('hidden');
+    // Abrir overlay de mejoras (placeholder) en vez de "coming soon"
+    shopMainOverlay.classList.add('hidden');
+    const upgradesOverlay = document.getElementById('shop-upgrades-overlay');
+    if (upgradesOverlay) upgradesOverlay.classList.remove('hidden');
 });
+
+// Botón volver dentro de mejoras: cerrar overlay de mejoras y volver al menú principal de la tienda
+const upgradesBackBtn = document.getElementById('shop-upgrades-back-button');
+if (upgradesBackBtn) {
+    upgradesBackBtn.addEventListener('click', () => {
+        const upgradesOverlay = document.getElementById('shop-upgrades-overlay');
+        if (upgradesOverlay) upgradesOverlay.classList.add('hidden');
+        shopMainOverlay.classList.remove('hidden');
+    });
+}
 
 shopAchievementsButton.addEventListener('click', () => {
     shopMainOverlay.classList.add('hidden');
@@ -181,6 +199,9 @@ Object.keys(languageButtons).forEach(lang => {
 
         // Cambiar idioma
         changeLanguage(lang);
+
+        // Actualizar indicador de logros pendientes tras el cambio de idioma
+        try { refreshAchievementsButton(); } catch (e) {}
 
         // NO cerrar modal automáticamente - el usuario puede elegir otro idioma
     });

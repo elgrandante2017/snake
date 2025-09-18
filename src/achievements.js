@@ -46,7 +46,15 @@ function render(currentLang = localStorage.getItem('selectedLanguage') || 'es') 
 
     achievementIndex.textContent = `${currentIndex + 1} / ${achievementsData.length}`;
     achievementBadge.textContent = unlocked ? ach.icon : '❓';
-    achievementTitle.textContent = unlocked ? getTranslation(ach.translateKey || ach.id, currentLang) : '?';
+
+    // Si está desbloqueado mostrar el título; si además no fue reclamado, añadir etiqueta "Falta reclamar"
+    const titleText = unlocked ? getTranslation(ach.translateKey || ach.id, currentLang) : '?';
+    if (unlocked && !claimed.has(ach.id)) {
+        achievementTitle.textContent = `${titleText} — ${getTranslation('pendingClaim', currentLang)}`;
+    } else {
+        achievementTitle.textContent = titleText;
+    }
+
     achievementDesc.textContent = ach.description;
 
     if (unlocked && !claimed.has(ach.id)) {
@@ -247,6 +255,7 @@ function hasUnclaimedAchievements() {
  */
 function updateAchievementsButtonHighlight() {
     if (!shopAchievementsButton) return;
+    const currentLang = localStorage.getItem('selectedLanguage') || 'es';
 
     // Calcular cuántos logros desbloqueados están sin reclamar
     let unclaimedCount = 0;
@@ -260,7 +269,7 @@ function updateAchievementsButtonHighlight() {
         shopAchievementsButton.classList.add('achievement-alert');
         shopAchievementsButton.setAttribute('aria-live', 'polite');
 
-        // Mostrar un pequeño contador con la cantidad de recompensas sin reclamar
+        // Mostrar un pequeño contador con la cantidad de recompensas sin reclamar (en el botón de Logros)
         let countEl = shopAchievementsButton.querySelector('.achievement-unclaimed-count');
         if (!countEl) {
             countEl = document.createElement('span');
@@ -275,12 +284,45 @@ function updateAchievementsButtonHighlight() {
             countEl.style.fontSize = '0.85em';
             shopAchievementsButton.appendChild(countEl);
         }
+        // Mostrar solo el número visualmente; añadir título/aria en el idioma seleccionado
         countEl.textContent = String(unclaimedCount);
+        const countTitle = `${unclaimedCount} ${getTranslation('pendingClaim', currentLang)}`;
+        countEl.setAttribute('title', countTitle);
+        countEl.setAttribute('aria-label', countTitle);
+
+        // Además, mostrar contador en la parte superior (junto al contador de monedas) para que el jugador lo vea sin abrir la tienda
+        try {
+            const topContainer = document.getElementById('coin-counter');
+            if (topContainer) {
+                let topCount = topContainer.querySelector('#ach-unclaimed-top');
+                if (!topCount) {
+                    topCount = document.createElement('span');
+                    topCount.id = 'ach-unclaimed-top';
+                    topCount.className = 'achievement-unclaimed-count';
+                    topCount.style.marginLeft = '8px';
+                    topContainer.appendChild(topCount);
+                }
+                topCount.textContent = String(unclaimedCount);
+                // Añadir texto accesible en el idioma del usuario
+                topCount.setAttribute('title', `${getTranslation('achievements', currentLang)}: ${getTranslation('pendingClaim', currentLang)}`);
+                topCount.setAttribute('aria-label', `${unclaimedCount} ${getTranslation('pendingClaim', currentLang)}`);
+            }
+        } catch (e) {
+            // noop
+        }
     } else {
         shopAchievementsButton.classList.remove('achievement-alert');
         shopAchievementsButton.removeAttribute('aria-live');
         const countEl = shopAchievementsButton.querySelector('.achievement-unclaimed-count');
         if (countEl && countEl.parentNode) countEl.parentNode.removeChild(countEl);
+
+        // Remover indicador superior si existe
+        try {
+            const topCount = document.getElementById('ach-unclaimed-top');
+            if (topCount && topCount.parentNode) topCount.parentNode.removeChild(topCount);
+        } catch (e) {
+            // noop
+        }
     }
 }
 

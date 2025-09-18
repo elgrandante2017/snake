@@ -54,7 +54,15 @@ export const translations = {
         comingSoon: "¡Próximamente!",
         comingSoonDesc: "Esta función estará disponible en futuras actualizaciones.",
         close: "Cerrar",
-        default: "Predeterminado"
+        default: "Predeterminado",
+ 
+        // Mensajes relacionados a reclamos de logros
+        pendingClaim: "Falta reclamar",
+        goClaim: "Ir a reclamar",
+
+        // Placeholder de mejoras
+        upgradeTankName: "Serpiente en tanque",
+        upgradeTankDesc: "Un concepto: la serpiente en un tanque estilo laboratorio. Actualmente solo decorativo."
     },
 
     zh: {
@@ -111,7 +119,15 @@ export const translations = {
         comingSoon: "即将推出！",
         comingSoonDesc: "此功能将在未来的更新中提供。",
         close: "关闭",
-        default: "默认"
+        default: "默认",
+ 
+        // Mensajes relacionados a reclamos de logros
+        pendingClaim: "未领取",
+        goClaim: "前往领取",
+
+        // Placeholder de mejoras
+        upgradeTankName: "罐中的蛇",
+        upgradeTankDesc: "概念：实验室风格的罐中蛇。目前仅为装饰。"
     },
 
     ru: {
@@ -168,7 +184,15 @@ export const translations = {
         comingSoon: "Скоро!",
         comingSoonDesc: "Эта функция будет доступна в будущих обновлениях.",
         close: "Закрыть",
-        default: "По умолчанию"
+        default: "По умолчанию",
+ 
+        // Mensajes relacionados a reclamos de logros
+        pendingClaim: "Необходимо забрать",
+        goClaim: "Перейти, чтобы забрать",
+
+        // Placeholder de mejoras
+        upgradeTankName: "Змея в резервуаре",
+        upgradeTankDesc: "Концепт: змея в лабораторном резервуаре. Пока только декор."
     },
 
     fr: {
@@ -225,7 +249,15 @@ export const translations = {
         comingSoon: "Bientôt!",
         comingSoonDesc: "Cette fonctionnalité sera disponible dans les futures mises à jour.",
         close: "Fermer",
-        default: "Par défaut"
+        default: "Par défaut",
+ 
+        // Mensajes relacionados a reclamos de logros
+        pendingClaim: "En attente de réclamation",
+        goClaim: "Aller réclamer",
+
+        // Placeholder de mejoras
+        upgradeTankName: "Serpent en cuve",
+        upgradeTankDesc: "Concept : serpent dans une cuve façon laboratoire. Pour l'instant décoratif."
     },
 
     pt: {
@@ -282,7 +314,15 @@ export const translations = {
         comingSoon: "Em breve!",
         comingSoonDesc: "Esta funcionalidade estará disponível em futuras atualizações.",
         close: "Fechar",
-        default: "Padrão"
+        default: "Padrão",
+ 
+        // Mensajes relacionados a reclamos de logros
+        pendingClaim: "Pendente de resgate",
+        goClaim: "Ir resgatar",
+
+        // Placeholder de mejoras
+        upgradeTankName: "Cobra em tanque",
+        upgradeTankDesc: "Conceito: cobra em um tanque com visual de laboratório. Atualmente apenas decorativo."
     },
 
     en: {
@@ -339,7 +379,15 @@ export const translations = {
         comingSoon: "Coming Soon!",
         comingSoonDesc: "This feature will be available in future updates.",
         close: "Close",
-        default: "Default"
+        default: "Default",
+ 
+        // Achievement claim messages
+        pendingClaim: "Pending claim",
+        goClaim: "Go claim",
+
+        // Placeholder for upgrades
+        upgradeTankName: "Snake in Tank",
+        upgradeTankDesc: "Concept: snake in a lab-style tank. Currently decorative only."
     }
 };
 
@@ -391,12 +439,25 @@ function updateSpecificElements(language) {
     document.querySelector('.record-container').innerHTML = `${t('record')}: <span id="record">${document.getElementById('record').textContent}</span>`;
     document.querySelector('.level-info').innerHTML = `${t('level')}: <span id="level">${document.getElementById('level').textContent}</span>`;
 
-    // Monedas
+    // Monedas - preservar badge de logros sin reclamar si ya existe
     const coinCounter = document.getElementById('coin-counter');
+    const existingTop = coinCounter ? coinCounter.querySelector('#ach-unclaimed-top') : null;
+    const existingTopText = existingTop ? existingTop.textContent : null;
+
     coinCounter.innerHTML = `
         <div class="coin-icon">$</div>
         <span id="coin-amount">${document.getElementById('coin-amount').textContent}</span>
     `;
+
+    // Si había un contador superior de logros sin reclamar, re-crearlo con el mismo texto
+    if (existingTopText !== null) {
+        const span = document.createElement('span');
+        span.id = 'ach-unclaimed-top';
+        span.className = 'achievement-unclaimed-count';
+        span.style.marginLeft = '8px';
+        span.textContent = existingTopText;
+        coinCounter.appendChild(span);
+    }
 
     // Tienda
     const shopLabel = document.querySelector('.shop-label');

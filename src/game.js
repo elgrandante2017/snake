@@ -3,7 +3,7 @@ import * as state from './state.js';
 import { draw, drawGameOver } from './draw.js';
 import { canvas, scoreElement, focusableElements, setFocusedElementIndex, restartButton, coinAmountElement, updateElegantSuitUI, levelElement, experienceFillElement, experienceTextElement } from './ui.js';
 import { getTranslation } from './translations.js';
-import { openAchievements } from './achievements.js';
+import { openAchievements, refreshAchievementsButton } from './achievements.js';
 
 
 export function generateFood() {
@@ -336,14 +336,24 @@ function checkAchievements() {
 }
 
 function showAchievementNotification(message, targetId) {
+    const currentLang = localStorage.getItem('selectedLanguage') || 'es';
+
     // Reproducir sonido de logro
     playAchievementSound();
 
-    // Crear notificación temporal con botón para ir a reclamar
+    // Crear notificación temporal con botón para ir a reclamar (texto traducido)
+    const btnLabel = getTranslation('goClaim', currentLang);
     const notification = document.createElement('div');
     notification.className = 'achievement-notification';
-    notification.innerHTML = `🏆 ${message} <button class="achievement-notification-button">Ir a reclamar</button>`;
+    notification.innerHTML = `🏆 ${message} <button class="achievement-notification-button">${btnLabel}</button>`;
     document.body.appendChild(notification);
+
+    // Actualizar indicador de logros sin reclamar en UI (top y tienda)
+    try {
+        refreshAchievementsButton();
+    } catch (e) {
+        // noop si no está disponible
+    }
 
     // Añadir listener al botón para abrir modal de logros y posicionar en el logro concreto
     const btn = notification.querySelector('.achievement-notification-button');
