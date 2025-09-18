@@ -36,12 +36,16 @@ export const languageButtons = {
     ru: document.getElementById('lang-ru')
 };
 
-// Elementos de logros
+// Elementos de logros (nuevo panel)
 export const achievementsOverlay = document.getElementById('achievements-overlay');
-export const achievementsClose = document.getElementById('achievements-close');
-export const counterLeft = document.getElementById('counter-left');
-export const counterRight = document.getElementById('counter-right');
-export const counterValue = document.getElementById('counter-value');
+export const achievementsModalClose = document.getElementById('achievements-modal-close');
+export const achievementPrev = document.getElementById('achievement-prev');
+export const achievementNext = document.getElementById('achievement-next');
+export const achievementIndex = document.getElementById('achievement-index');
+export const achievementTitle = document.getElementById('achievement-title');
+export const achievementBadge = document.getElementById('achievement-badge');
+export const achievementDesc = document.getElementById('achievement-desc');
+export const achievementClaim = document.getElementById('achievement-claim');
 
 // Elementos de nivel y experiencia
 export const levelElement = document.getElementById('level');
@@ -50,7 +54,7 @@ export const experienceTextElement = document.getElementById('experience-text');
 
 export let focusedElementIndex = -1;
 
-export const focusableElements = [shopIcon, restartButton, shopCosmeticsButton, shopUpgradesButton, shopAchievementsButton, shopCosmeticsBackButton, shopMainCloseButton, comingSoonCloseButton, elegantSuitButton, brightnessIcon, languageIcon, languageButtons.es, languageButtons.en, languageButtons.fr, languageButtons.pt, languageButtons.zh, languageButtons.ru, brightnessSlider, brightnessDefault, brightnessClose, languageClose, counterLeft, counterRight, achievementsClose];
+export const focusableElements = [shopIcon, restartButton, shopCosmeticsButton, shopUpgradesButton, shopAchievementsButton, shopCosmeticsBackButton, shopMainCloseButton, comingSoonCloseButton, elegantSuitButton, brightnessIcon, languageIcon, languageButtons.es, languageButtons.en, languageButtons.fr, languageButtons.pt, languageButtons.zh, languageButtons.ru, brightnessSlider, brightnessDefault, brightnessClose, languageClose, achievementPrev, achievementNext, achievementClaim, achievementsModalClose];
 
 export function setFocusedElementIndex(index) {
     focusedElementIndex = index;

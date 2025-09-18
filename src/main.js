@@ -2,9 +2,10 @@ import * as state from './state.js';
 import { resetGameState, setRecord } from './state.js';
 import { generateFood, startGame, pauseGame, resumeGame, getGameRunningState, updateExperienceBar, playPurchaseSound } from './game.js';
 import { draw, drawStartScreen } from './draw.js';
-import { recordElement, restartButton, shopIcon, shopMainOverlay, shopMainCloseButton, shopCosmeticsButton, shopUpgradesButton, shopAchievementsButton, shopCosmeticsOverlay, shopCosmeticsBackButton, comingSoonModal, comingSoonCloseButton, coinAmountElement, elegantSuitButton, elegantSuitPriceElement, brightnessIcon, brightnessOverlay, brightnessSlider, brightnessValue, brightnessDefault, brightnessClose, updateElegantSuitUI, levelElement, languageIcon, languageOverlay, languageClose, languageButtons, achievementsOverlay, achievementsClose, counterLeft, counterRight, counterValue } from './ui.js';
+import { recordElement, restartButton, shopIcon, shopMainOverlay, shopMainCloseButton, shopCosmeticsButton, shopUpgradesButton, shopAchievementsButton, shopCosmeticsOverlay, shopCosmeticsBackButton, comingSoonModal, comingSoonCloseButton, coinAmountElement, elegantSuitButton, elegantSuitPriceElement, brightnessIcon, brightnessOverlay, brightnessSlider, brightnessValue, brightnessDefault, brightnessClose, updateElegantSuitUI, levelElement, languageIcon, languageOverlay, languageClose, languageButtons, achievementsOverlay } from './ui.js';
 import { changeLanguage, getTranslation } from './translations.js';
 import { setupAllInputs } from './input.js';
+import { openAchievements } from './achievements.js';
 
 let gameWasRunningBeforeShop = false;
 
@@ -98,7 +99,8 @@ shopUpgradesButton.addEventListener('click', () => {
 });
 
 shopAchievementsButton.addEventListener('click', () => {
-    comingSoonModal.classList.remove('hidden');
+    shopMainOverlay.classList.add('hidden');
+    openAchievements();
 });
 
 comingSoonCloseButton.addEventListener('click', () => {
@@ -187,151 +189,14 @@ Object.keys(languageButtons).forEach(lang => {
 // --- Event Listeners de Logros ---
 shopAchievementsButton.addEventListener('click', () => {
     shopMainOverlay.classList.add('hidden');
-    achievementsOverlay.classList.remove('hidden');
-    populateAchievements();
+    openAchievements();
 });
 
-achievementsClose.addEventListener('click', () => {
-    achievementsOverlay.classList.add('hidden');
-    shopMainOverlay.classList.remove('hidden');
-});
+/* achievementsClose ahora gestionado por src/achievements.js */
 
-// Función para poblar los logros con datos reales
-function populateAchievements() {
-    const slots = document.querySelectorAll('.achievement-slot');
-    const currentLang = localStorage.getItem('selectedLanguage') || 'es';
-    
-    // Definir los logros con sus íconos, nombres y descripciones
-    const achievementsData = [
-        { 
-            id: 'firstApple', 
-            icon: '🍎', 
-            name: getTranslation('firstApple', currentLang),
-            description: 'Come tu primera manzana en el juego'
-        },
-        { 
-            id: 'hundredApples', 
-            icon: '🍏', 
-            name: getTranslation('hundredApples', currentLang),
-            description: 'Come 100 manzanas en total'
-        },
-        { 
-            id: 'elegantSuit', 
-            icon: '👔', 
-            name: getTranslation('elegantSuit', currentLang),
-            description: 'Compra y equipa el traje elegante'
-        },
-        { 
-            id: 'level5', 
-            icon: '⭐', 
-            name: getTranslation('level5', currentLang),
-            description: 'Alcanza el nivel 5'
-        },
-        { 
-            id: 'speedDemon', 
-            icon: '⚡', 
-            name: 'Velocidad Máxima',
-            description: 'Usa 10 power-ups de velocidad'
-        },
-        { 
-            id: 'invincible', 
-            icon: '🛡️', 
-            name: 'Invencible',
-            description: 'Usa 5 power-ups de invencibilidad'
-        },
-        { 
-            id: 'coinCollector', 
-            icon: '💰', 
-            name: 'Coleccionista',
-            description: 'Gana 1000 monedas en total'
-        },
-        { 
-            id: 'longSnake', 
-            icon: '🐍', 
-            name: 'Serpiente Larga',
-            description: 'Alcanza una longitud de 30 segmentos'
-        },
-        { 
-            id: 'perfectGame', 
-            icon: '🏆', 
-            name: 'Partida Perfecta',
-            description: 'Gana una partida sin morir'
-        },
-        { 
-            id: 'explorer', 
-            icon: '🗺️', 
-            name: 'Explorador',
-            description: 'Juega durante 1 hora en total'
-        }
-    ];
-    
-    slots.forEach((slot, index) => {
-        if (index < achievementsData.length) {
-            const achievement = achievementsData[index];
-            
-            // Limpiar el contenido del slot
-            slot.innerHTML = '';
-            
-            // Crear y añadir el ícono del logro
-            const icon = document.createElement('div');
-            icon.textContent = achievement.icon;
-            icon.style.fontSize = '2em';
-            
-            // Crear y añadir la descripción
-            const description = document.createElement('div');
-            description.className = 'achievement-description';
-            description.textContent = achievement.description;
-            
-            // Crear y añadir el nombre
-            const name = document.createElement('div');
-            name.className = 'achievement-name';
-            name.textContent = achievement.name;
-            
-            // Añadir elementos al slot
-            slot.appendChild(icon);
-            slot.appendChild(description);
-            slot.appendChild(name);
-            
-            // Verificar si el logro está desbloqueado
-            if (state.achievements[achievement.id]) {
-                slot.classList.remove('locked');
-                slot.classList.add('unlocked');
-            } else {
-                slot.classList.remove('unlocked');
-                slot.classList.add('locked');
-            }
-        }
-    });
-}
+/* populateAchievements ahora está gestionado por src/achievements.js */
 
-// --- Funcionalidad del contador ---
-let counterValueNum = 1;
-const maxCounterValue = 10;
-
-function updateCounterDisplay() {
-    counterValue.textContent = counterValueNum;
-}
-
-function moveCounter(direction) {
-    if (direction === -1 && counterValueNum > 1) {
-        counterValueNum--;
-        updateCounterDisplay();
-    } else if (direction === 1 && counterValueNum < maxCounterValue) {
-        counterValueNum++;
-        updateCounterDisplay();
-    }
-}
-
-counterLeft.addEventListener('click', () => {
-    moveCounter(-1);
-});
-
-counterRight.addEventListener('click', () => {
-    moveCounter(1);
-});
-
-// Exportar función para uso en input.js
-window.moveCounter = moveCounter;
+/* Contador y navegación de selección de logros ahora gestionado por src/achievements.js */
 
 init();
 

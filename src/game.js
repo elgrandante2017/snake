@@ -3,6 +3,7 @@ import * as state from './state.js';
 import { draw, drawGameOver } from './draw.js';
 import { canvas, scoreElement, focusableElements, setFocusedElementIndex, restartButton, coinAmountElement, updateElegantSuitUI, levelElement, experienceFillElement, experienceTextElement } from './ui.js';
 import { getTranslation } from './translations.js';
+import { openAchievements } from './achievements.js';
 
 
 export function generateFood() {
@@ -60,14 +61,15 @@ function moveSnake() {
 
             // Verificar si sube de nivel
             if (state.experience >= state.experienceToNext) {
-                state.setLevel(state.level + 1);
+                const newLevel = state.level + 1;
+                state.setLevel(newLevel);
                 state.setExperience(state.experience - state.experienceToNext);
                 state.setExperienceToNext(Math.floor(state.experienceToNext * 1.2)); // Aumenta la exp necesaria
-                levelElement.textContent = state.level;
+                levelElement.textContent = newLevel;
 
                 // Actualizar estadística de nivel máximo
-                if (state.level > state.stats.maxLevel) {
-                    state.stats.maxLevel = state.level;
+                if (newLevel > state.stats.maxLevel) {
+                    state.stats.maxLevel = newLevel;
                 }
 
                 // Reproducir sonido de subir nivel
@@ -293,69 +295,87 @@ function checkAchievements() {
     // Logro: Primera manzana
     if (state.score >= 10 && !state.achievements.firstApple) {
         state.unlockAchievement('firstApple');
-        showAchievementNotification(getTranslation('firstApple', currentLang));
+        showAchievementNotification(getTranslation('firstApple', currentLang), 'firstApple');
     }
 
     // Logro: 100 manzanas
     if (state.score >= 1000 && !state.achievements.hundredApples) {
         state.unlockAchievement('hundredApples');
-        showAchievementNotification(getTranslation('hundredApples', currentLang));
+        showAchievementNotification(getTranslation('hundredApples', currentLang), 'hundredApples');
     }
 
     // Logro: Traje elegante
     if (state.elegantSuitEquipped && !state.achievements.elegantSuit) {
         state.unlockAchievement('elegantSuit');
-        showAchievementNotification(getTranslation('elegantSuitEquipped', currentLang));
+        showAchievementNotification(getTranslation('elegantSuitEquipped', currentLang), 'elegantSuit');
     }
 
     // Logro: Nivel 5
     if (state.level >= 5 && !state.achievements.level5) {
         state.unlockAchievement('level5');
-        showAchievementNotification(getTranslation('level5', currentLang));
+        showAchievementNotification(getTranslation('level5', currentLang), 'level5');
     }
 
     // Logro: Demonio de la velocidad (10 power-ups de velocidad)
     if (state.stats.totalPowerUps >= 10 && !state.achievements.speedDemon) {
         state.unlockAchievement('speedDemon');
-        showAchievementNotification(getTranslation('speedDemon', currentLang));
+        showAchievementNotification(getTranslation('speedDemon', currentLang), 'speedDemon');
     }
 
     // Logro: Coleccionista de monedas (1000 monedas)
     if (state.coins >= 1000 && !state.achievements.coinCollector) {
         state.unlockAchievement('coinCollector');
-        showAchievementNotification(getTranslation('coinCollector', currentLang));
+        showAchievementNotification(getTranslation('coinCollector', currentLang), 'coinCollector');
     }
 
     // Logro: Serpiente larga (30 segmentos)
     if (state.snake.length >= 30 && !state.achievements.longSnake) {
         state.unlockAchievement('longSnake');
-        showAchievementNotification(getTranslation('longSnake', currentLang));
+        showAchievementNotification(getTranslation('longSnake', currentLang), 'longSnake');
     }
 }
 
-function showAchievementNotification(message) {
+function showAchievementNotification(message, targetId) {
     // Reproducir sonido de logro
     playAchievementSound();
 
-    // Crear notificación temporal
+    // Crear notificación temporal con botón para ir a reclamar
     const notification = document.createElement('div');
     notification.className = 'achievement-notification';
-    notification.textContent = '🏆 ' + message;
+    notification.innerHTML = `🏆 ${message} <button class="achievement-notification-button">Ir a reclamar</button>`;
     document.body.appendChild(notification);
+
+    // Añadir listener al botón para abrir modal de logros y posicionar en el logro concreto
+    const btn = notification.querySelector('.achievement-notification-button');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            // Abrir modal de logros en el logro objetivo (si fue proporcionado)
+            try {
+                openAchievements(targetId);
+            } catch (e) {
+                // Fallback: abrir sin objetivo si hay error
+                openAchievements();
+            }
+            // Remover la notificación inmediatamente
+            if (notification.parentNode) notification.parentNode.removeChild(notification);
+        });
+    }
 
     // Animar entrada
     setTimeout(() => {
         notification.classList.add('show');
     }, 100);
 
-    // Remover después de 3 segundos
+    // Remover después de 3 segundos (si aún existe)
     setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 500);
+        if (notification.parentNode) {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 500);
+        }
     }, 3000);
 }
 

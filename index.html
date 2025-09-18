@@ -141,60 +141,25 @@
 
     <div id="achievements-overlay" class="hidden">
         <div class="achievements-content">
+            <button id="achievements-modal-close" class="modal-close" aria-label="Cerrar">✖</button>
             <h3>🏆 <span data-translate="achievements">Logros</span></h3>
 
-            <!-- Contador con flechas -->
-            <div class="achievement-counter">
-                <button id="counter-left" class="counter-arrow">⬅️</button>
-                <span id="counter-value">1</span>
-                <button id="counter-right" class="counter-arrow">➡️</button>
+            <!-- Controles de navegación -->
+            <div class="achievement-controls">
+                <button id="achievement-prev" class="counter-arrow" aria-label="Anterior">⬅️</button>
+                <div id="achievement-index">1 / 10</div>
+                <button id="achievement-next" class="counter-arrow" aria-label="Siguiente">➡️</button>
             </div>
 
-            <!-- Grid de 10 casillas -->
-            <div class="achievements-grid">
-                <div class="achievement-slot locked" data-slot="1">
-                    <div class="achievement-description">Cómo desbloquear este logro</div>
-                    <div class="achievement-name">Logro 1</div>
-                </div>
-                <div class="achievement-slot locked" data-slot="2">
-                    <div class="achievement-description">Cómo desbloquear este logro</div>
-                    <div class="achievement-name">Logro 2</div>
-                </div>
-                <div class="achievement-slot locked" data-slot="3">
-                    <div class="achievement-description">Cómo desbloquear este logro</div>
-                    <div class="achievement-name">Logro 3</div>
-                </div>
-                <div class="achievement-slot locked" data-slot="4">
-                    <div class="achievement-description">Cómo desbloquear este logro</div>
-                    <div class="achievement-name">Logro 4</div>
-                </div>
-                <div class="achievement-slot locked" data-slot="5">
-                    <div class="achievement-description">Cómo desbloquear este logro</div>
-                    <div class="achievement-name">Logro 5</div>
-                </div>
-                <div class="achievement-slot locked" data-slot="6">
-                    <div class="achievement-description">Cómo desbloquear este logro</div>
-                    <div class="achievement-name">Logro 6</div>
-                </div>
-                <div class="achievement-slot locked" data-slot="7">
-                    <div class="achievement-description">Cómo desbloquear este logro</div>
-                    <div class="achievement-name">Logro 7</div>
-                </div>
-                <div class="achievement-slot locked" data-slot="8">
-                    <div class="achievement-description">Cómo desbloquear este logro</div>
-                    <div class="achievement-name">Logro 8</div>
-                </div>
-                <div class="achievement-slot locked" data-slot="9">
-                    <div class="achievement-description">Cómo desbloquear este logro</div>
-                    <div class="achievement-name">Logro 9</div>
-                </div>
-                <div class="achievement-slot locked" data-slot="10">
-                    <div class="achievement-description">Cómo desbloquear este logro</div>
-                    <div class="achievement-name">Logro 10</div>
-                </div>
+            <!-- Panel principal del logro seleccionado -->
+            <div class="achievement-panel">
+                <div id="achievement-title" class="achievement-title">?</div>
+                <div id="achievement-badge" class="achievement-badge">❓</div>
+                <div id="achievement-desc" class="achievement-desc">Cómo desbloquear este logro</div>
             </div>
 
-            <button id="achievements-close" data-translate="close">Cerrar</button>
+            <!-- Botón reclamar aparece solo si el logro está desbloqueado y no reclamado -->
+            <button id="achievement-claim" class="shop-menu-button hidden">Reclamar</button>
         </div>
     </div>
 </body>
