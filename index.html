@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="coin-counter">
+        <div class="coin-icon">$</div>
+        <span id="coin-amount">0</span>
+    </div>
+    <div id="brightness-icon">
+        <div class="brightness-wrench">🔧</div>
+    </div>
+
+    <div id="language-icon">
+        <div class="language-globe">🌐</div>
+    </div>
+    <div id="shop-icon">
+        <div class="shop-awning"></div>
+        <div class="shop-base">
+            <div class="shop-window"></div>
+        </div>
+        <div class="shop-label" data-translate="shop">Tienda</div>
+    </div>
+    <div class="wrapper">
+        <h1 data-translate="gameTitle">Snake</h1>
+        <div class="game-container">
+            <canvas id="gameCanvas" width="400" height="400"></canvas>
+            <!-- Partículas para efectos visuales -->
+            <div id="particles-container"></div>
+        </div>
+        <div class="stats-container">
+            <div class="score-container">
+                <span data-translate="score">Puntuación</span>: <span id="score">0</span>
+            </div>
+            <div class="record-container">
+                <span data-translate="record">Record</span>: <span id="record">0</span>
+            </div>
+        </div>
+        <div class="level-container">
+            <div class="level-info">
+                <span data-translate="level">Nivel</span>: <span id="level">1</span>
+            </div>
+            <div class="experience-bar">
+                <div class="experience-fill" id="experience-fill"></div>
+                <span class="experience-text" id="experience-text">0/100 XP</span>
+            </div>
+        </div>
+        <button id="restartButton" data-translate="startButton">Empezar</button>
+    </div>
+    <script src="src/main.js" type="module"></script>
+
+    <div id="shop-cosmetics-overlay" class="hidden">
+        <div class="shop-content">
+            <h2 data-translate="cosmetics">Cosméticos para la serpiente</h2>
+            <div class="shop-grid">
+                <div class="shop-item">
+                    <div class="cosmetic-display">
+                        <div class="snake-suit"></div>
+                        <div class="snake-hat"></div>
+                    </div>
+                    <p class="item-name" data-translate="elegantSuit">Traje Elegante</p>
+                    <p class="item-price" id="elegant-suit-price">100 <span class="coin-icon-small">$</span></p>
+                    <button id="elegant-suit-button" class="shop-item-button" data-translate="buy">Comprar</button>
+                </div>
+                <div class="shop-item">? <p>Próximamente</p></div>
+                <div class="shop-item">? <p>Próximamente</p></div>
+                <div class="shop-item">? <p>Próximamente</p></div>
+                <div class="shop-item">? <p>Próximamente</p></div>
+                <div class="shop-item">? <p>Próximamente</p></div>
+                <div class="shop-item">? <p>Próximamente</p></div>
+                <div class="shop-item">? <p>Próximamente</p></div>
+                <div class="shop-item">? <p>Próximamente</p></div>
+            </div>
+            <button id="shop-cosmetics-back-button" data-translate="close">Volver</button>
+        </div>
+    </div>
+
+    <div id="shop-main-overlay" class="hidden">
+        <div class="shop-content">
+            <h2 data-translate="shop">Tienda</h2>
+            <div class="shop-main-menu">
+                <button id="shop-cosmetics-button" class="shop-menu-button" data-translate="cosmetics">Cosméticos para la serpiente</button>
+                <button id="shop-upgrades-button" class="shop-menu-button" data-translate="upgrades">Mejoras para la serpiente</button>
+                <button id="shop-achievements-button" class="shop-menu-button" data-translate="achievements">Logros</button>
+            </div>
+            <button id="shop-main-close-button" data-translate="close">Cerrar</button>
+        </div>
+    </div>
+
+    <div id="coming-soon-modal" class="hidden">
+        <div class="modal-content">
+            <h3 data-translate="comingSoon">¡Próximamente!</h3>
+            <p data-translate="comingSoonDesc">Esta sección estará disponible en futuras actualizaciones.</p>
+            <button id="coming-soon-close" data-translate="close">Cerrar</button>
+        </div>
+    </div>
+
+    <div id="brightness-overlay" class="hidden">
+        <div class="brightness-content">
+            <h3 data-translate="brightness">Control de Brillo</h3>
+            <div class="brightness-slider-container">
+                <label for="brightness-slider" data-translate="brightness">Brillo:</label>
+                <input type="range" id="brightness-slider" min="0.1" max="2" step="0.1" value="1">
+                <span id="brightness-value">100%</span>
+            </div>
+            <button id="brightness-default" data-translate="default">Predeterminado</button>
+            <button id="brightness-close" data-translate="close">Cerrar</button>
+        </div>
+    </div>
+
+    <div id="language-overlay" class="hidden">
+        <div class="language-content">
+            <h3>🌐 <span data-translate="languages">Idiomas</span></h3>
+            <div class="language-selection">
+                <button id="lang-es" class="language-button selected" data-lang="es">
+                    🇪🇸 <span data-translate="spanish">Español</span>
+                </button>
+                <button id="lang-en" class="language-button" data-lang="en">
+                    🇺🇸 <span data-translate="english">Inglés</span>
+                </button>
+                <button id="lang-fr" class="language-button" data-lang="fr">
+                    🇫🇷 <span data-translate="french">Francés</span>
+                </button>
+                <button id="lang-pt" class="language-button" data-lang="pt">
+                    🇵🇹 <span data-translate="portuguese">Portugués</span>
+                </button>
+                <button id="lang-zh" class="language-button" data-lang="zh">
+                    🇨🇳 <span data-translate="chinese">Chino</span>
+                </button>
+                <button id="lang-ru" class="language-button" data-lang="ru">
+                    🇷🇺 <span data-translate="russian">Ruso</span>
+                </button>
+            </div>
+            <button id="language-close" data-translate="close">Cerrar</button>
+        </div>
+    </div>
+
+    <div id="achievements-overlay" class="hidden">
+        <div class="achievements-content">
+            <h3>🏆 <span data-translate="achievements">Logros</span></h3>
+
+            <!-- Contador con flechas -->
+            <div class="achievement-counter">
+                <button id="counter-left" class="counter-arrow">⬅️</button>
+                <span id="counter-value">1</span>
+                <button id="counter-right" class="counter-arrow">➡️</button>
+            </div>
+
+            <!-- Grid de 10 casillas -->
+            <div class="achievements-grid">
+                <div class="achievement-slot locked" data-slot="1">
+                    <div class="achievement-description">Cómo desbloquear este logro</div>
+                    <div class="achievement-name">Logro 1</div>
+                </div>
+                <div class="achievement-slot locked" data-slot="2">
+                    <div class="achievement-description">Cómo desbloquear este logro</div>
+                    <div class="achievement-name">Logro 2</div>
+                </div>
+                <div class="achievement-slot locked" data-slot="3">
+                    <div class="achievement-description">Cómo desbloquear este logro</div>
+                    <div class="achievement-name">Logro 3</div>
+                </div>
+                <div class="achievement-slot locked" data-slot="4">
+                    <div class="achievement-description">Cómo desbloquear este logro</div>
+                    <div class="achievement-name">Logro 4</div>
+                </div>
+                <div class="achievement-slot locked" data-slot="5">
+                    <div class="achievement-description">Cómo desbloquear este logro</div>
+                    <div class="achievement-name">Logro 5</div>
+                </div>
+                <div class="achievement-slot locked" data-slot="6">
+                    <div class="achievement-description">Cómo desbloquear este logro</div>
+                    <div class="achievement-name">Logro 6</div>
+                </div>
+                <div class="achievement-slot locked" data-slot="7">
+                    <div class="achievement-description">Cómo desbloquear este logro</div>
+                    <div class="achievement-name">Logro 7</div>
+                </div>
+                <div class="achievement-slot locked" data-slot="8">
+                    <div class="achievement-description">Cómo desbloquear este logro</div>
+                    <div class="achievement-name">Logro 8</div>
+                </div>
+                <div class="achievement-slot locked" data-slot="9">
+                    <div class="achievement-description">Cómo desbloquear este logro</div>
+                    <div class="achievement-name">Logro 9</div>
+                </div>
+                <div class="achievement-slot locked" data-slot="10">
+                    <div class="achievement-description">Cómo desbloquear este logro</div>
+                    <div class="achievement-name">Logro 10</div>
+                </div>
+            </div>
+
+            <button id="achievements-close" data-translate="close">Cerrar</button>
+        </div>
+    </div>
+</body>
+</html>
